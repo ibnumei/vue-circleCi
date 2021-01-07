@@ -1,18 +1,18 @@
 version: 2.1
 orbs:
-  node: circleci/node@1.1 // node orb 
-  heroku: circleci/heroku@0.0.10 // heroku orb
-  coveralls: coveralls/coveralls@1.0.6 // coveralls orb
+  coveralls: coveralls/coveralls@1.0.6
+  node: circleci/node@1.1
+  heroku: circleci/heroku@0.0.10
 workflows:
   heroku_deploy:
     jobs:
       - build
       - heroku/deploy-via-git: # Use the pre-configured job
-        requires:
-          - build
-        filters:
-          branches:
-            only: master
+          requires:
+            - build
+          filters:
+            branches:
+              only: master
 jobs:
   build:
     docker:
@@ -20,21 +20,20 @@ jobs:
     steps:
       - checkout
       - restore_cache:
-        key: dependency-cache-{{ checksum "package.json" }}
+          key: dependency-cache-{{ checksum "package.json" }}
       - run:
-        name: install-npm-dependencies
-        command: npm install
+          name: install-dependencies
+          command: yarn install
       - save_cache:
-        key: dependency-cache-{{ checksum "package.json" }}
-        paths:
-          - ./node_modules
+          key: dependency-cache-{{ checksum "package.json" }}
+          paths:
+            - ./node_modules
       - run: # run tests
-        name: test
-        command: npm run test:unit
-      - run: # run code coverage report
-        name: code-coverage
-        command: npm run coveralls
-      - run: # run build
-        name: Build
-        command: npm run build
-      # - coveralls/upload
+          name: test
+          command: yarn test:unit
+      # - run: # run code coverage report
+      #     name: code-coverage
+      #     command: yarn run coveralls
+      - run: 
+           name: Build
+           command: yarn build
